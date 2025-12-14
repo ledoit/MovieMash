@@ -38,10 +38,10 @@ func main() {
 	}
 
 	log.Printf("Server starting on port %s", port)
-	log.Printf("API available at http://localhost:%s/api/v1", port)
+	log.Printf("API available at http://0.0.0.0:%s/api/v1", port)
 
-	// Start server
-	if err := http.ListenAndServe(":"+port, mux); err != nil {
+	// Start server - listen on all interfaces for Railway
+	if err := http.ListenAndServe("0.0.0.0:"+port, mux); err != nil {
 		log.Fatal("Server failed to start:", err)
 	}
 }
