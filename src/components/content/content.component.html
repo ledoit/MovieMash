@@ -1,0 +1,29 @@
+<div class="content-container">
+  <div class="tabs">
+    <button 
+      class="tab-button" 
+      [class.active]="activeTab === 'leaderboard'"
+      (click)="setActiveTab('leaderboard')">
+      Leaderboard
+    </button>
+    <button 
+      class="tab-button" 
+      [class.active]="activeTab === 'gladiators'"
+      (click)="setActiveTab('gladiators')">
+      Gladiators
+    </button>
+    <button 
+      class="tab-button" 
+      [class.active]="activeTab === 'recommendations'"
+      (click)="setActiveTab('recommendations')">
+      Recommendations
+    </button>
+  </div>
+
+  <div class="tab-content">
+    <app-leaderboard *ngIf="activeTab === 'leaderboard'"></app-leaderboard>
+    <app-comparison *ngIf="activeTab === 'gladiators'"></app-comparison>
+    <app-recommendations *ngIf="activeTab === 'recommendations'"></app-recommendations>
+  </div>
+</div>
+
