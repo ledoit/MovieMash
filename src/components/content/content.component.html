@@ -21,9 +21,9 @@
   </div>
 
   <div class="tab-content">
-    <app-leaderboard *ngIf="activeTab === 'leaderboard'"></app-leaderboard>
-    <app-comparison *ngIf="activeTab === 'gladiators'"></app-comparison>
-    <app-recommendations *ngIf="activeTab === 'recommendations'"></app-recommendations>
+    <app-leaderboard [hidden]="activeTab !== 'leaderboard'"></app-leaderboard>
+    <app-comparison [hidden]="activeTab !== 'gladiators'"></app-comparison>
+    <app-recommendations [hidden]="activeTab !== 'recommendations'"></app-recommendations>
   </div>
 </div>
 

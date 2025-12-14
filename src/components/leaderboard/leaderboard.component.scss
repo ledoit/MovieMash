@@ -1,4 +1,300 @@
 .leaderboard-container {
-  // Leaderboard-specific styles
+  width: 100%;
+  padding: clamp(16px, 3vw, 32px);
+  max-width: 1400px;
+  margin: 0 auto;
+  overflow-y: auto;
+  height: 100%;
 }
 
+.view-toggle {
+  display: flex;
+  gap: 12px;
+  margin-bottom: clamp(20px, 4vw, 32px);
+  border-bottom: 2px solid hsla(0, 0%, 0%, 0.1);
+  padding-bottom: 12px;
+
+  button {
+    padding: clamp(8px, 2vw, 12px) clamp(16px, 3vw, 24px);
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: clamp(14px, 2.5vw, 16px);
+    font-weight: 500;
+    color: hsla(0, 0%, 40%, 1);
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+
+    &:hover {
+      color: hsla(0, 0%, 20%, 1);
+    }
+
+    &.active {
+      color: hsla(0, 0%, 0%, 1);
+      border-bottom-color: hsla(0, 50%, 50%, 1);
+    }
+  }
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: hsla(0, 0%, 40%, 1);
+  font-size: clamp(14px, 2.5vw, 18px);
+}
+
+h2 {
+  font-size: clamp(20px, 4vw, 28px);
+  font-weight: 600;
+  margin-bottom: clamp(16px, 3vw, 24px);
+  color: hsla(0, 0%, 0%, 1);
+}
+
+// Top 4 Sets View
+.top4-view {
+  .sets-list {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(12px, 2vw, 16px);
+  }
+
+  .set-row {
+    display: flex;
+    align-items: center;
+    gap: clamp(12px, 2vw, 20px);
+    background: hsla(0, 0%, 100%, 1);
+    border-radius: 12px;
+    padding: clamp(12px, 2vw, 16px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+      transform: translateX(4px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  .rank-badge {
+    flex-shrink: 0;
+    background: hsla(0, 50%, 50%, 1);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 16px;
+  }
+
+  .movies-horizontal {
+    display: flex;
+    gap: clamp(8px, 1.5vw, 12px);
+    flex: 1;
+    overflow-x: auto;
+    padding: 4px 0;
+
+    &::-webkit-scrollbar {
+      height: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: hsla(0, 0%, 95%, 1);
+      border-radius: 2px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: hsla(0, 0%, 70%, 1);
+      border-radius: 2px;
+
+      &:hover {
+        background: hsla(0, 0%, 50%, 1);
+      }
+    }
+  }
+
+  .movie-poster-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    min-width: 80px;
+    max-width: 100px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: translateY(-4px);
+    }
+  }
+
+  .movie-poster-wrapper {
+    position: relative;
+    width: 80px;
+    height: 120px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: hsla(0, 0%, 95%, 1);
+
+    &.clickable {
+      cursor: pointer;
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+
+      &.missing-poster {
+        opacity: 0.3;
+        filter: grayscale(100%);
+      }
+    }
+
+    .missing-indicator {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: hsla(0, 70%, 50%, 0.9);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      z-index: 1;
+    }
+  }
+
+  .movie-title {
+    font-size: clamp(10px, 1.8vw, 12px);
+    font-weight: 500;
+    text-align: center;
+    color: hsla(0, 0%, 0%, 1);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+  }
+
+  .set-stats {
+    flex-shrink: 0;
+    font-size: 14px;
+    color: hsla(0, 0%, 40%, 1);
+    text-align: right;
+    min-width: 100px;
+  }
+}
+
+// Individual Movies View
+.movies-view {
+  .movies-list {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(12px, 2vw, 16px);
+  }
+
+  .movie-row {
+    display: flex;
+    align-items: center;
+    gap: clamp(12px, 2vw, 20px);
+    background: hsla(0, 0%, 100%, 1);
+    border-radius: 12px;
+    padding: clamp(12px, 2vw, 16px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+      transform: translateX(4px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  .rank-badge {
+    flex-shrink: 0;
+    background: hsla(0, 50%, 50%, 1);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 16px;
+  }
+
+  .movie-poster-wrapper {
+    position: relative;
+    width: 80px;
+    height: 120px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    background: hsla(0, 0%, 95%, 1);
+
+    &.clickable {
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+      &:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      }
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+
+      &.missing-poster {
+        opacity: 0.3;
+        filter: grayscale(100%);
+      }
+    }
+
+    .missing-indicator {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: hsla(0, 70%, 50%, 0.9);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      z-index: 1;
+    }
+  }
+
+  .movie-details {
+    flex: 1;
+    min-width: 0;
+
+    h3 {
+      font-size: clamp(14px, 2.5vw, 18px);
+      font-weight: 600;
+      margin: 0 0 4px 0;
+      color: hsla(0, 0%, 0%, 1);
+    }
+
+    p {
+      font-size: clamp(12px, 2vw, 14px);
+      color: hsla(0, 0%, 40%, 1);
+      margin: 0;
+    }
+  }
+
+  .movie-stats {
+    flex-shrink: 0;
+    font-size: 14px;
+    color: hsla(0, 0%, 40%, 1);
+    text-align: right;
+  }
+}

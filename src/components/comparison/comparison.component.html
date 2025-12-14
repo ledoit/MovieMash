@@ -1,3 +1,64 @@
-<div class="container">
-  <h2>Gladiators Component</h2>
+<div class="gladiators-container">
+  <div *ngIf="isLoading" class="loading">
+    <p>Loading gladiators...</p>
+  </div>
+
+  <div *ngIf="!isLoading && comparison" class="comparison">
+    <!-- Left Set (Set A) -->
+    <div 
+      class="set-card clickable"
+      [class.selected]="selectedCard === 'left'"
+      (click)="vote('left')"
+      (mouseenter)="selectCard('left')"
+      (mouseleave)="selectedCard = null">
+      <div class="movie-grid">
+        <div 
+          class="movie-card" 
+          *ngFor="let movie of comparison.set_a.movies">
+          <div class="movie-image-wrapper">
+            <img 
+              [src]="movie.poster || '/assets/placeholder.png'" 
+              [alt]="movie.title" />
+            <div 
+              class="movie-overlay" 
+              [style.background-color]="getRandomColor(movie.id)">
+              <h3>{{ movie.title }}</h3>
+              <p>{{ movie.year }} • {{ movie.director }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VS Divider -->
+    <div class="vs-divider">
+      <span>VS</span>
+    </div>
+
+    <!-- Right Set (Set B) -->
+    <div 
+      class="set-card clickable"
+      [class.selected]="selectedCard === 'right'"
+      (click)="vote('right')"
+      (mouseenter)="selectCard('right')"
+      (mouseleave)="selectedCard = null">
+      <div class="movie-grid">
+        <div 
+          class="movie-card" 
+          *ngFor="let movie of comparison.set_b.movies">
+          <div class="movie-image-wrapper">
+            <img 
+              [src]="movie.poster || '/assets/placeholder.png'" 
+              [alt]="movie.title" />
+            <div 
+              class="movie-overlay" 
+              [style.background-color]="getRandomColor(movie.id)">
+              <h3>{{ movie.title }}</h3>
+              <p>{{ movie.year }} • {{ movie.director }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

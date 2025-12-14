@@ -1,5 +1,82 @@
 <div class="leaderboard-container">
-  <h2>Leaderboard Component</h2>
-  <!-- Your leaderboard UI will go here -->
-</div>
+  <!-- View Toggle -->
+  <div class="view-toggle">
+    <button 
+      [class.active]="viewMode === 'top4'"
+      (click)="switchView('top4')">
+      Top 4 Sets
+    </button>
+    <button 
+      [class.active]="viewMode === 'movies'"
+      (click)="switchView('movies')">
+      Individual Movies
+    </button>
+  </div>
 
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading">
+    <p>Loading leaderboard...</p>
+  </div>
+
+  <!-- Top 4 Sets View -->
+  <div *ngIf="!isLoading && viewMode === 'top4'" class="top4-view">
+    <h2>Top 4 Sets Leaderboard</h2>
+    <div class="sets-list">
+      <div 
+        *ngFor="let set of top4Sets; let i = index" 
+        class="set-row">
+        <div class="rank-badge">{{ i + 1 }}</div>
+        <div class="movies-horizontal">
+          <div 
+            *ngFor="let movie of set.movies" 
+            class="movie-poster-item"
+            (click)="openMoviePage(movie)">
+            <div class="movie-poster-wrapper">
+              <img 
+                [src]="movie.poster || '/assets/placeholder.png'" 
+                [alt]="movie.title"
+                [class.missing-poster]="!movie.poster || movie.poster === ''" />
+              <div *ngIf="!movie.poster || movie.poster === ''" class="missing-indicator">
+                Missing
+              </div>
+            </div>
+            <div class="movie-title">{{ movie.title }}</div>
+          </div>
+        </div>
+        <div class="set-stats" *ngIf="set.win_rate !== undefined">
+          <span>Win Rate: {{ (set.win_rate * 100).toFixed(1) }}%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Individual Movies View -->
+  <div *ngIf="!isLoading && viewMode === 'movies'" class="movies-view">
+    <h2>Individual Movies Leaderboard</h2>
+    <div class="movies-list">
+      <div 
+        *ngFor="let movie of movies; let i = index" 
+        class="movie-row">
+        <div class="rank-badge">{{ i + 1 }}</div>
+        <div 
+          class="movie-poster-wrapper clickable"
+          (click)="openMoviePage(movie)">
+          <img 
+            [src]="movie.poster || '/assets/placeholder.png'" 
+            [alt]="movie.title"
+            [class.missing-poster]="!movie.poster || movie.poster === ''" />
+          <div *ngIf="!movie.poster || movie.poster === ''" class="missing-indicator">
+            Missing
+          </div>
+        </div>
+        <div class="movie-details">
+          <h3>{{ movie.title }}</h3>
+          <p>{{ movie.year }} • {{ movie.director }}</p>
+        </div>
+        <div class="movie-stats" *ngIf="movie.win_rate !== undefined">
+          <span>Win Rate: {{ (movie.win_rate * 100).toFixed(1) }}%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

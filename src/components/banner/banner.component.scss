@@ -1,7 +1,7 @@
 .container {
   padding: clamp(12px, 3vw, 24px) clamp(16px, 3.5vw, 128px) clamp(20px, 5vw, 40px);
   margin: 0px;
-  width: 100vw;
+  width: 100%;
   background-color: hsla(0, 50%, 50%, 1);
   display: grid;
   place-items: center;  
