@@ -42,7 +42,10 @@ INSERT INTO movies (title, year, director, poster_url) VALUES
 ('The Handmaiden', 2016, 'Park Chan-wook', 'https://image.tmdb.org/t/p/w500/7o3Ylzpf7BD2HQfIVoJsMk3yHhX.jpg'),
 ('Burning', 2018, 'Lee Chang-dong', 'https://image.tmdb.org/t/p/w500/5VTN0pR8gcqV3EPUHHfMGnJYN9G.jpg'),
 ('Portrait of a Lady on Fire', 2019, 'Céline Sciamma', 'https://image.tmdb.org/t/p/w500/7o3Ylzpf7BD2HQfIVoJsMk3yHhX.jpg'),
-('Amélie', 2001, 'Jean-Pierre Jeunet', 'https://image.tmdb.org/t/p/w500/5VTN0pR8gcqV3EPUHHfMGnJYN9G.jpg')
+('Amélie', 2001, 'Jean-Pierre Jeunet', 'https://image.tmdb.org/t/p/w500/5VTN0pR8gcqV3EPUHHfMGnJYN9G.jpg'),
+('The Shining', 1980, 'Stanley Kubrick', 'https://image.tmdb.org/t/p/w500/uAR0AWqhQL1hQa69UDEbb2rE5Wx.jpg'),
+('2001: A Space Odyssey', 1968, 'Stanley Kubrick', 'https://image.tmdb.org/t/p/w500/ve72VxNqjGM69Uky4WTo2bK6rfq.jpg'),
+('Blade Runner', 1982, 'Ridley Scott', 'https://image.tmdb.org/t/p/w500/63N9uy8nd9j7Eog2axPQ8lBr3Wj.jpg')
 ON CONFLICT DO NOTHING;
 
 -- Get anonymous user ID
