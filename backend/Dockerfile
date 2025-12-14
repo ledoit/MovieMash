@@ -4,17 +4,17 @@ FROM golang:1.23-alpine AS builder
 # Set working directory
 WORKDIR /app
 
-# Copy go mod files
+# Copy go mod files first (for better caching)
 COPY go.mod go.sum ./
 RUN go mod download
 
-# Copy source code
+# Copy all source code
 COPY . ./
 
 # Build the application
-RUN go build -o bin/api ./cmd/api
+RUN go build -o /app/bin/api ./cmd/api
 
-# Final stage
+# Final stage - minimal Alpine image
 FROM alpine:latest
 
 # Install ca-certificates for HTTPS
@@ -22,11 +22,11 @@ RUN apk --no-cache add ca-certificates
 
 WORKDIR /root/
 
-# Copy the binary from builder
-COPY --from=builder /app/bin/api .
+# Copy the binary from builder stage
+COPY --from=builder /app/bin/api /root/api
 
-# Expose port
+# Expose port (Railway will set PORT env var)
 EXPOSE 8080
 
 # Run the binary
-CMD ["./api"]
+CMD ["/root/api"]
