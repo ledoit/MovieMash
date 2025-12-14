@@ -5,7 +5,7 @@ FROM golang:1.23-alpine AS builder
 WORKDIR /app
 
 # Copy go mod files
-COPY backend/go.mod backend/go.sum ./
+COPY go.mod go.sum ./
 RUN go mod download
 
 # Copy source code
@@ -30,4 +30,3 @@ EXPOSE 8080
 
 # Run the binary
 CMD ["./api"]
-
