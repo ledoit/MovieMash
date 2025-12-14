@@ -168,9 +168,9 @@ func GetTop4Leaderboard(w http.ResponseWriter, r *http.Request) {
 // GetMoviesLeaderboard returns all movies (for now, without ranking)
 func GetMoviesLeaderboard(w http.ResponseWriter, r *http.Request) {
 	query := `
-		SELECT id, title, year, director, poster_url
+		SELECT DISTINCT ON (title, year, director) id, title, year, director, poster_url
 		FROM movies
-		ORDER BY title
+		ORDER BY title, year, director, id
 	`
 
 	rows, err := database.DB.Query(query)

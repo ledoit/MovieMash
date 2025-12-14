@@ -8,6 +8,7 @@
 }
 
 .view-toggle {
+  justify-self: center;
   display: flex;
   gap: 12px;
   margin-bottom: clamp(20px, 4vw, 32px);
@@ -52,6 +53,9 @@ h2 {
 
 // Top 4 Sets View
 .top4-view {
+  width: 50%;
+  justify-self: center;
+  justify-items: center;
   .sets-list {
     display: flex;
     flex-direction: column;
@@ -120,8 +124,7 @@ h2 {
     align-items: center;
     gap: 8px;
     flex-shrink: 0;
-    min-width: 80px;
-    max-width: 100px;
+    width: 100px;
     cursor: pointer;
     transition: transform 0.2s ease;
 
@@ -178,6 +181,8 @@ h2 {
     text-overflow: ellipsis;
     white-space: nowrap;
     width: 100%;
+    max-width: 100px;
+    box-sizing: border-box;
   }
 
   .set-stats {
@@ -191,6 +196,9 @@ h2 {
 
 // Individual Movies View
 .movies-view {
+  width: 50%;
+  justify-self: center;
+  justify-items: center;
   .movies-list {
     display: flex;
     flex-direction: column;

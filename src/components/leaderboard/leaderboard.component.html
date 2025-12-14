@@ -4,12 +4,12 @@
     <button 
       [class.active]="viewMode === 'top4'"
       (click)="switchView('top4')">
-      Top 4 Sets
+      Top 4's
     </button>
     <button 
       [class.active]="viewMode === 'movies'"
       (click)="switchView('movies')">
-      Individual Movies
+      Movies
     </button>
   </div>
 
@@ -20,7 +20,6 @@
 
   <!-- Top 4 Sets View -->
   <div *ngIf="!isLoading && viewMode === 'top4'" class="top4-view">
-    <h2>Top 4 Sets Leaderboard</h2>
     <div class="sets-list">
       <div 
         *ngFor="let set of top4Sets; let i = index" 
@@ -52,7 +51,6 @@
 
   <!-- Individual Movies View -->
   <div *ngIf="!isLoading && viewMode === 'movies'" class="movies-view">
-    <h2>Individual Movies Leaderboard</h2>
     <div class="movies-list">
       <div 
         *ngFor="let movie of movies; let i = index" 
