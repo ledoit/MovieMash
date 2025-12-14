@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 interface Movie {
   id: number;
@@ -43,7 +44,7 @@ export class LeaderboardComponent implements OnInit {
 
   loadTop4Sets() {
     this.isLoading = true;
-    this.http.get<Top4Set[]>('/api/v1/leaderboard/top4').subscribe({
+    this.http.get<Top4Set[]>(`${environment.apiUrl}/v1/leaderboard/top4`).subscribe({
       next: (data) => {
         this.top4Sets = data;
         this.isLoading = false;
@@ -56,7 +57,7 @@ export class LeaderboardComponent implements OnInit {
   }
 
   loadMovies() {
-    this.http.get<Movie[]>('/api/v1/leaderboard/movies').subscribe({
+    this.http.get<Movie[]>(`${environment.apiUrl}/v1/leaderboard/movies`).subscribe({
       next: (data) => {
         this.movies = data;
       },

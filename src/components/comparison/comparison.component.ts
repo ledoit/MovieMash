@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 interface Movie {
   id: number;
@@ -64,7 +65,7 @@ export class ComparisonComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.selectedCard = null;
 
-    this.http.get<Comparison>('/api/v1/comparison').subscribe({
+    this.http.get<Comparison>(`${environment.apiUrl}/v1/comparison`).subscribe({
       next: (data) => {
         this.comparison = data;
         this.isLoading = false;
@@ -91,7 +92,7 @@ export class ComparisonComponent implements OnInit, OnDestroy {
       ? this.comparison.set_a.id 
       : this.comparison.set_b.id;
 
-    this.http.post('/api/v1/votes', {
+    this.http.post(`${environment.apiUrl}/v1/votes`, {
       comparison_id: this.comparison.id,
       winner_set_id: winnerSetId,
     }).subscribe({
