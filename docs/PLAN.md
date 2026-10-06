@@ -4,8 +4,8 @@ Agent tracker. Update the status line when a chunk lands. Commits stay small. Ph
 
 ## Status
 
-Current: 4 — public Letterboxd export is in `ingest/letterboxd.json`. Plain HTTP ingest stops when Cloudflare challenges. UI still waits on Forge.
-Next: Terraform for a free Postgres and API host. PyTorch after that.
+Current: 5 — `infra/` describes a Neon free-plan database. It is not applied: no `NEON_API_KEY` in the environment. Railway stays until that database answers. UI waits on Forge.
+Next: apply Neon when a key exists, then a $0 place for the API process. PyTorch after the API can reach the database.
 
 ## Goal
 
@@ -15,8 +15,8 @@ https://movie-mash-six.vercel.app serves real Letterboxd top 4s. A vote updates 
 
 - Browser: Angular 18, TypeScript, SCSS, already on Vercel project `movie-mash`.
 - API: Go, Gin, `net/http` server replaced by Gin.
-- Database: PostgreSQL.
-- Infra: Terraform. Railway config leaves once Terraform can boot the API and database. Frontend stays on Vercel.
+- Database: PostgreSQL on Neon’s free plan, described in `infra/`. Railway config leaves once that database is applied and the API is pointed at it.
+- Infra: Terraform. Frontend stays on Vercel. API compute is still open: Fly and Cloud Run both want an account, and neither is applied.
 - Model: PyTorch trains offline and writes a score file. The API process loads it. Training is a command in the README.
 - Ingest: Go command reading a JSON export or a saved public HTML page. A direct fetch that receives a Cloudflare challenge stops. No challenge bypass.
 - Profiles: see `docs/profiles.md`.
