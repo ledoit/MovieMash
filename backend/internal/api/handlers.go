@@ -194,8 +194,19 @@ func CreateVote(c *gin.Context) {
 
 func GetTop4Leaderboard(c *gin.Context) {
 	rows, err := database.DB.Query(`
-		SELECT id FROM top4_sets
-		ORDER BY elo DESC, match_count DESC, id
+		SELECT t.id
+		FROM top4_sets t
+		JOIN users u ON u.id = t.user_id
+		WHERE t.is_current
+		  AND (
+		    NOT EXISTS (
+		      SELECT 1 FROM users p
+		      JOIN top4_sets ts ON ts.user_id = p.id AND ts.is_current
+		      WHERE p.control IN ('simulator', 'human')
+		    )
+		    OR u.control IN ('simulator', 'human')
+		  )
+		ORDER BY t.elo DESC, t.match_count DESC, t.id
 	`)
 	if err != nil {
 		log.Printf("Error fetching top4 sets: %v", err)
@@ -249,7 +260,7 @@ func GetMoviesLeaderboard(c *gin.Context) {
 func GetProfilesLeaderboard(c *gin.Context) {
 	rows, err := database.DB.Query(`
 		SELECT id,
-		       COALESCE(letterboxd_username, username, ''),
+		       COALESCE(NULLIF(display_name, ''), letterboxd_username, username, ''),
 		       elo, match_count, wins, control
 		FROM users
 		WHERE control <> 'system'
@@ -278,8 +289,19 @@ func pickPair(voter string) (int, int, error) {
 	query := `
 		SELECT a.id, b.id
 		FROM top4_sets a
+		JOIN users ua ON ua.id = a.user_id
 		JOIN top4_sets b ON a.id < b.id
-		WHERE NOT EXISTS (
+		JOIN users ub ON ub.id = b.user_id
+		WHERE a.is_current AND b.is_current
+		  AND (
+		    NOT EXISTS (
+		      SELECT 1 FROM users p
+		      JOIN top4_sets ts ON ts.user_id = p.id AND ts.is_current
+		      WHERE p.control IN ('simulator', 'human')
+		    )
+		    OR (ua.control IN ('simulator', 'human') AND ub.control IN ('simulator', 'human'))
+		  )
+		  AND NOT EXISTS (
 			SELECT 1
 			FROM votes v
 			JOIN comparisons c ON c.id = v.comparison_id
@@ -298,7 +320,18 @@ func pickPair(voter string) (int, int, error) {
 		err = database.DB.QueryRow(`
 			SELECT a.id, b.id
 			FROM top4_sets a
+			JOIN users ua ON ua.id = a.user_id
 			JOIN top4_sets b ON a.id < b.id
+			JOIN users ub ON ub.id = b.user_id
+			WHERE a.is_current AND b.is_current
+			  AND (
+			    NOT EXISTS (
+			      SELECT 1 FROM users p
+			      JOIN top4_sets ts ON ts.user_id = p.id AND ts.is_current
+			      WHERE p.control IN ('simulator', 'human')
+			    )
+			    OR (ua.control IN ('simulator', 'human') AND ub.control IN ('simulator', 'human'))
+			  )
 			ORDER BY RANDOM()
 			LIMIT 1
 		`).Scan(&a, &b)
