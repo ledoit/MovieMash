@@ -1,0 +1,14 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: moviemash
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: moviemash
+    ports:
+      - "5432:5432"
+    volumes:
+      - moviemash_pg:/var/lib/postgresql/data
+
+volumes:
+  moviemash_pg:
