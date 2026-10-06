@@ -4,8 +4,8 @@ Agent tracker. Update the status line when a chunk lands. Commits stay small. Ph
 
 ## Status
 
-Current: 3 — Elo vote path and profiles leaderboard API are in the tree. UI still has no Profiles tab; that waits on Forge.
-Next: Letterboxd ingest of public top 4s and film logs.
+Current: 4 — public Letterboxd export is in `ingest/letterboxd.json`. Plain HTTP ingest stops when Cloudflare challenges. UI still waits on Forge.
+Next: Terraform for a free Postgres and API host. PyTorch after that.
 
 ## Goal
 
@@ -18,7 +18,7 @@ https://movie-mash-six.vercel.app serves real Letterboxd top 4s. A vote updates 
 - Database: PostgreSQL.
 - Infra: Terraform. Railway config leaves once Terraform can boot the API and database. Frontend stays on Vercel.
 - Model: PyTorch trains offline and writes a score file. The API process loads it. Training is a command in the README.
-- Ingest: Python, public Letterboxd HTML only. No unofficial-login bypass, no captcha evasion. If a page is blocked, stop and take an export.
+- Ingest: Go command reading a JSON export or a saved public HTML page. A direct fetch that receives a Cloudflare challenge stops. No challenge bypass.
 - Profiles: see `docs/profiles.md`.
 
 ## Hosting constraint

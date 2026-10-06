@@ -9,7 +9,7 @@ Profiles are Letterboxd identities stored in this app’s PostgreSQL. They are n
 | Browser | Angular 18. The Profiles leaderboard is a view on the existing Leaderboard tab. |
 | API | Go with Gin, same process as votes, ingest, and model scoring. |
 | Store | PostgreSQL. One `users` row per Letterboxd username. Login is a separate `accounts` row. |
-| Public facts | Python scraper of public Letterboxd HTML. Letterboxd does not offer an official API that can list a profile’s top 4, film log, and bio for this app. |
+| Public facts | Saved public Letterboxd HTML or the JSON export in `ingest/`. Letterboxd has no official API for this, and a plain HTTP client receives a Cloudflare challenge. The ingest command stops there. It does not solve the challenge. A normal browser can save the page. |
 | Posters | TMDB, through the existing Go fetcher. |
 | Ratings | Elo on the profile, on its top 4, and on each movie, written in the vote transaction. |
 | Recommendations | PyTorch, trained on vote outcomes, top-4 membership, and watch overlap. Go asks that model for scores. |

@@ -27,6 +27,18 @@ npm run build
 
 The frontend runs on `http://localhost:4200` and proxies API requests to `http://localhost:8080`.
 
+### Database and ingest
+
+```bash
+docker compose up -d
+cd backend
+go run ./cmd/migrate
+go run ./cmd/ingest -json ../ingest/letterboxd.json
+go run ./cmd/api
+```
+
+`ingest/letterboxd.json` is a public-profile export (top 4s and a page of logged films). `go run ./cmd/ingest -fetch someuser` only prints favorites when Letterboxd returns the page. A Cloudflare challenge stops that command.
+
 ### Backend
 
 See backend documentation for Go server setup.
