@@ -4,8 +4,8 @@ Agent tracker. Update the status line when a chunk lands. Commits stay small. Ph
 
 ## Status
 
-Current: 0 — tracker written, implementation not started.
-Next: untrack `.angular/cache` and `backend/bin`, then switch the router to Gin without changing vote behavior.
+Current: 3 — Elo vote path and profiles leaderboard API are in the tree. UI still has no Profiles tab; that waits on Forge.
+Next: Letterboxd ingest of public top 4s and film logs.
 
 ## Goal
 

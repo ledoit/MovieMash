@@ -42,6 +42,7 @@ func SetupRouter() *gin.Engine {
 	v1.POST("/votes", CreateVote)
 	v1.GET("/leaderboard/top4", GetTop4Leaderboard)
 	v1.GET("/leaderboard/movies", GetMoviesLeaderboard)
+	v1.GET("/leaderboard/profiles", GetProfilesLeaderboard)
 
 	return router
 }
