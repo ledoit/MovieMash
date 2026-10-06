@@ -5,7 +5,7 @@ A FaceMash-style application for comparing Letterboxd top 4 movie sets.
 ## Tech Stack
 
 - **Frontend**: Angular 18 (standalone components)
-- **Backend**: Go (Gin framework)
+- **Backend**: Go (Gin)
 - **Database**: PostgreSQL
 
 ## Development

@@ -2,10 +2,10 @@ package api
 
 import (
 	"database/sql"
-	"encoding/json"
 	"log"
 	"net/http"
 
+	"github.com/gin-gonic/gin"
 	"github.com/lib/pq"
 	"moviemash/backend/internal/database"
 )
@@ -24,9 +24,9 @@ type Top4Set struct {
 }
 
 type Comparison struct {
-	ID    int     `json:"id"`
-	SetA  Top4Set `json:"set_a"`
-	SetB  Top4Set `json:"set_b"`
+	ID   int     `json:"id"`
+	SetA Top4Set `json:"set_a"`
+	SetB Top4Set `json:"set_b"`
 }
 
 type VoteRequest struct {
@@ -34,10 +34,14 @@ type VoteRequest struct {
 	WinnerSetID  int `json:"winner_set_id"`
 }
 
-// GetComparison returns a random comparison of two top 4 sets
-func GetComparison(w http.ResponseWriter, r *http.Request) {
+func Health(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"ok": true})
+}
+
+// GetComparison returns a random comparison of two top 4 sets.
+func GetComparison(c *gin.Context) {
 	query := `
-		SELECT 
+		SELECT
 			c.id as comparison_id,
 			sa.id as set_a_id,
 			sb.id as set_b_id
@@ -51,100 +55,80 @@ func GetComparison(w http.ResponseWriter, r *http.Request) {
 	var comparisonID, setAID, setBID int
 	err := database.DB.QueryRow(query).Scan(&comparisonID, &setAID, &setBID)
 	if err == sql.ErrNoRows {
-		// No comparisons exist, create one from random sets
 		err = createRandomComparison(&comparisonID, &setAID, &setBID)
 		if err != nil {
-			http.Error(w, "Failed to create comparison: "+err.Error(), http.StatusInternalServerError)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create comparison: " + err.Error()})
 			return
 		}
 	} else if err != nil {
 		log.Printf("Error fetching comparison: %v", err)
-		http.Error(w, "Failed to fetch comparison", http.StatusInternalServerError)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch comparison"})
 		return
 	}
 
-	// Fetch movies for set A
 	setA, err := getTop4Set(setAID)
 	if err != nil {
-		http.Error(w, "Failed to fetch set A: "+err.Error(), http.StatusInternalServerError)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch set A: " + err.Error()})
 		return
 	}
 
-	// Fetch movies for set B
 	setB, err := getTop4Set(setBID)
 	if err != nil {
-		http.Error(w, "Failed to fetch set B: "+err.Error(), http.StatusInternalServerError)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch set B: " + err.Error()})
 		return
 	}
 
-	comparison := Comparison{
+	c.JSON(http.StatusOK, Comparison{
 		ID:   comparisonID,
 		SetA: setA,
 		SetB: setB,
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(comparison)
+	})
 }
 
-// CreateVote handles vote submission
-func CreateVote(w http.ResponseWriter, r *http.Request) {
+// CreateVote handles vote submission.
+func CreateVote(c *gin.Context) {
 	var req VoteRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
 		return
 	}
 
-	// Get or create anonymous user
 	anonUserID, err := getOrCreateAnonymousUser()
 	if err != nil {
-		http.Error(w, "Failed to get user: "+err.Error(), http.StatusInternalServerError)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get user: " + err.Error()})
 		return
 	}
-
-	// Insert vote
-	insertQuery := `
-		INSERT INTO votes (comparison_id, user_id, winner_set_id)
-		VALUES ($1, $2, $3)
-		RETURNING id
-	`
 
 	var voteID int
-	err = database.DB.QueryRow(insertQuery, req.ComparisonID, anonUserID, req.WinnerSetID).Scan(&voteID)
+	err = database.DB.QueryRow(
+		`INSERT INTO votes (comparison_id, user_id, winner_set_id) VALUES ($1, $2, $3) RETURNING id`,
+		req.ComparisonID, anonUserID, req.WinnerSetID,
+	).Scan(&voteID)
 	if err != nil {
 		log.Printf("Error inserting vote: %v", err)
-		http.Error(w, "Failed to create vote", http.StatusInternalServerError)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create vote"})
 		return
 	}
 
-	// Create a new comparison for next time
-	// (This ensures fresh comparisons)
 	go createRandomComparison(nil, nil, nil)
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]interface{}{
-		"id": voteID,
+	c.JSON(http.StatusOK, gin.H{
+		"id":      voteID,
 		"message": "Vote recorded",
 	})
 }
 
-// GetTop4Leaderboard returns all top 4 sets (for now, without ranking)
-func GetTop4Leaderboard(w http.ResponseWriter, r *http.Request) {
-	query := `
-		SELECT id
-		FROM top4_sets
-		ORDER BY id
-	`
-
-	rows, err := database.DB.Query(query)
+// GetTop4Leaderboard returns all top 4 sets (for now, without ranking).
+func GetTop4Leaderboard(c *gin.Context) {
+	rows, err := database.DB.Query(`SELECT id FROM top4_sets ORDER BY id`)
 	if err != nil {
 		log.Printf("Error fetching top4 sets: %v", err)
-		http.Error(w, "Failed to fetch top4 sets", http.StatusInternalServerError)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch top4 sets"})
 		return
 	}
 	defer rows.Close()
 
-	var sets []Top4Set
+	sets := []Top4Set{}
 	for rows.Next() {
 		var setID int
 		if err := rows.Scan(&setID); err != nil {
@@ -157,16 +141,14 @@ func GetTop4Leaderboard(w http.ResponseWriter, r *http.Request) {
 			log.Printf("Error fetching set %d: %v", setID, err)
 			continue
 		}
-
 		sets = append(sets, set)
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(sets)
+	c.JSON(http.StatusOK, sets)
 }
 
-// GetMoviesLeaderboard returns all movies (for now, without ranking)
-func GetMoviesLeaderboard(w http.ResponseWriter, r *http.Request) {
+// GetMoviesLeaderboard returns all movies (for now, without ranking).
+func GetMoviesLeaderboard(c *gin.Context) {
 	query := `
 		SELECT DISTINCT ON (title, year, director) id, title, year, director, poster_url
 		FROM movies
@@ -176,12 +158,12 @@ func GetMoviesLeaderboard(w http.ResponseWriter, r *http.Request) {
 	rows, err := database.DB.Query(query)
 	if err != nil {
 		log.Printf("Error fetching movies: %v", err)
-		http.Error(w, "Failed to fetch movies", http.StatusInternalServerError)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch movies"})
 		return
 	}
 	defer rows.Close()
 
-	var movies []Movie
+	movies := []Movie{}
 	for rows.Next() {
 		var m Movie
 		var posterURL sql.NullString
@@ -189,25 +171,18 @@ func GetMoviesLeaderboard(w http.ResponseWriter, r *http.Request) {
 			log.Printf("Error scanning movie: %v", err)
 			continue
 		}
-
 		if posterURL.Valid {
 			m.Poster = posterURL.String
-		} else {
-			m.Poster = ""
 		}
-
 		movies = append(movies, m)
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(movies)
+	c.JSON(http.StatusOK, movies)
 }
-
-// Helper functions
 
 func getTop4Set(setID int) (Top4Set, error) {
 	query := `
-		SELECT 
+		SELECT
 			t.id,
 			array_agg(m.id ORDER BY array_position(t.movie_ids, m.id)) as movie_ids,
 			array_agg(m.title ORDER BY array_position(t.movie_ids, m.id)) as titles,
@@ -252,14 +227,7 @@ func getTop4Set(setID int) (Top4Set, error) {
 }
 
 func createRandomComparison(comparisonID, setAID, setBID *int) error {
-	// Get two random top 4 sets
-	query := `
-		SELECT id FROM top4_sets
-		ORDER BY RANDOM()
-		LIMIT 2
-	`
-
-	rows, err := database.DB.Query(query)
+	rows, err := database.DB.Query(`SELECT id FROM top4_sets ORDER BY RANDOM() LIMIT 2`)
 	if err != nil {
 		return err
 	}
@@ -278,15 +246,11 @@ func createRandomComparison(comparisonID, setAID, setBID *int) error {
 		return sql.ErrNoRows
 	}
 
-	// Create comparison
-	insertQuery := `
-		INSERT INTO comparisons (set_a_id, set_b_id)
-		VALUES ($1, $2)
-		RETURNING id
-	`
-
 	var newComparisonID int
-	err = database.DB.QueryRow(insertQuery, ids[0], ids[1]).Scan(&newComparisonID)
+	err = database.DB.QueryRow(
+		`INSERT INTO comparisons (set_a_id, set_b_id) VALUES ($1, $2) RETURNING id`,
+		ids[0], ids[1],
+	).Scan(&newComparisonID)
 	if err != nil {
 		return err
 	}
@@ -305,14 +269,12 @@ func createRandomComparison(comparisonID, setAID, setBID *int) error {
 }
 
 func getOrCreateAnonymousUser() (int, error) {
-	// Try to get existing anonymous user
 	var userID int
 	err := database.DB.QueryRow("SELECT id FROM users WHERE username = 'anonymous'").Scan(&userID)
 	if err == nil {
 		return userID, nil
 	}
 
-	// Create anonymous user if doesn't exist
 	err = database.DB.QueryRow(
 		"INSERT INTO users (username, email) VALUES ('anonymous', 'anonymous@moviemash.local') RETURNING id",
 	).Scan(&userID)
@@ -322,4 +284,3 @@ func getOrCreateAnonymousUser() (int, error) {
 
 	return userID, nil
 }
-

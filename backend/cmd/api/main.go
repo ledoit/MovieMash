@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"net/http"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -28,10 +27,6 @@ func main() {
 
 	log.Println("Database connected successfully")
 
-	// Setup routes
-	mux := api.SetupRoutes()
-
-	// Get port from environment or use default
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
@@ -40,8 +35,8 @@ func main() {
 	log.Printf("Server starting on port %s", port)
 	log.Printf("API available at http://0.0.0.0:%s/api/v1", port)
 
-	// Start server - listen on all interfaces for Railway
-	if err := http.ListenAndServe("0.0.0.0:"+port, mux); err != nil {
+	router := api.SetupRouter()
+	if err := router.Run("0.0.0.0:" + port); err != nil {
 		log.Fatal("Server failed to start:", err)
 	}
 }

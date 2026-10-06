@@ -3,45 +3,45 @@ package api
 import (
 	"net/http"
 	"os"
+
+	"github.com/gin-gonic/gin"
 )
 
-// CORS middleware
-func corsMiddleware(next http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		// Allow all origins in production, or specific origin from env
-		origin := r.Header.Get("Origin")
+func cors() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		origin := c.GetHeader("Origin")
 		allowedOrigin := os.Getenv("ALLOWED_ORIGIN")
-		
-		if allowedOrigin != "" {
-			w.Header().Set("Access-Control-Allow-Origin", allowedOrigin)
-		} else {
-			// Allow any origin if not specified (for development)
-			w.Header().Set("Access-Control-Allow-Origin", origin)
-		}
-		
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-		w.Header().Set("Access-Control-Allow-Credentials", "true")
 
-		if r.Method == "OPTIONS" {
-			w.WriteHeader(http.StatusOK)
+		if allowedOrigin != "" {
+			c.Header("Access-Control-Allow-Origin", allowedOrigin)
+		} else if origin != "" {
+			c.Header("Access-Control-Allow-Origin", origin)
+		}
+
+		c.Header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		c.Header("Access-Control-Allow-Headers", "Content-Type")
+		c.Header("Access-Control-Allow-Credentials", "true")
+
+		if c.Request.Method == http.MethodOptions {
+			c.AbortWithStatus(http.StatusNoContent)
 			return
 		}
 
-		next(w, r)
+		c.Next()
 	}
 }
 
-// SetupRoutes configures all API routes
-func SetupRoutes() *http.ServeMux {
-	mux := http.NewServeMux()
+// SetupRouter configures the Gin engine and API routes.
+func SetupRouter() *gin.Engine {
+	router := gin.New()
+	router.Use(gin.Logger(), gin.Recovery(), cors())
 
-	// API v1 routes with CORS
-	mux.HandleFunc("/api/v1/comparison", corsMiddleware(GetComparison))
-	mux.HandleFunc("/api/v1/votes", corsMiddleware(CreateVote))
-	mux.HandleFunc("/api/v1/leaderboard/top4", corsMiddleware(GetTop4Leaderboard))
-	mux.HandleFunc("/api/v1/leaderboard/movies", corsMiddleware(GetMoviesLeaderboard))
+	v1 := router.Group("/api/v1")
+	v1.GET("/health", Health)
+	v1.GET("/comparison", GetComparison)
+	v1.POST("/votes", CreateVote)
+	v1.GET("/leaderboard/top4", GetTop4Leaderboard)
+	v1.GET("/leaderboard/movies", GetMoviesLeaderboard)
 
-	return mux
+	return router
 }
-
