@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	_ "github.com/lib/pq"
+	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/joho/godotenv"
 )
 
@@ -24,7 +24,7 @@ func main() {
 	}
 
 	// Connect to database
-	db, err := sql.Open("postgres", databaseURL)
+	db, err := sql.Open("pgx", databaseURL)
 	if err != nil {
 		log.Fatal("Failed to connect to database:", err)
 	}
@@ -51,4 +51,3 @@ func main() {
 	fmt.Println("Seed data inserted successfully!")
 	fmt.Println("Sample movies, top 4 sets, and comparisons are ready.")
 }
-

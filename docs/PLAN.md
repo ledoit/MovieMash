@@ -4,8 +4,8 @@ Agent tracker. Update the status line when a chunk lands. Commits stay small. Ph
 
 ## Status
 
-Current: 5 — `infra/` describes a Neon free-plan database. It is not applied: no `NEON_API_KEY` in the environment. Railway stays until that database answers. UI waits on Forge.
-Next: apply Neon when a key exists, then a $0 place for the API process. PyTorch after the API can reach the database.
+Current: 5 — Neon project `moviemash` is applied in the Menhir Holdings free org (0.25 CU, 6-hour history). Schema and all six Letterboxd profiles are loaded there. The API talks to Postgres through pgx; lib/pq stalls on Neon. The API process is not hosted yet, so the live site still calls Railway. UI waits on Forge.
+Next: a $0 host for the API, then point `environment.prod.ts` at it after `GET /api/v1/comparison` succeeds.
 
 ## Goal
 

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	_ "github.com/lib/pq"
+	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 var DB *sql.DB
@@ -18,7 +18,8 @@ func InitDB() error {
 	}
 
 	var err error
-	DB, err = sql.Open("postgres", databaseURL)
+	// pgx, not lib/pq. lib/pq leaves Neon sessions idle in transaction after a successful read.
+	DB, err = sql.Open("pgx", databaseURL)
 	if err != nil {
 		return fmt.Errorf("failed to open database: %w", err)
 	}
@@ -37,4 +38,3 @@ func CloseDB() error {
 	}
 	return nil
 }
-
